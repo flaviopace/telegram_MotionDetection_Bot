@@ -1,2 +1,5 @@
-# telegram_MotionDetection_Bot
-Simple Telegram Bot who is responsible to send the image captured by a Raspberry PI after a motion detenction
+# telegram_bot_home
+Home Surveillance Telegram BoT who is responsible tu publich on telegram the picture just captured by a Raspberry pi triggered by a motion detection
+
+Required python module:
+pip install python-telegram-bot --upgrade
