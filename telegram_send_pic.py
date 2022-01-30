@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import telegram
 import json
 import os
