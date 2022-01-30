@@ -21,5 +21,5 @@ if __name__ == "__main__":
         conf = json.load(in_file)
     # Initialize Bot
     bot = telegram.Bot(token=conf['telegram_bot_config']['token_id'])
-    bot.send_message(chat_id=conf['telegram_bot_config']['channel_id'], text="Movimento Rilevato")
-    bot.send_photo(chat_id=conf['telegram_bot_config']['channel_id'], photo=open(args.fileFullPath, 'rb'))
+    msg = bot.send_message(chat_id=conf['telegram_bot_config']['channel_id'], text="Movimento Rilevato")
+    meg = bot.send_photo(chat_id=conf['telegram_bot_config']['channel_id'], photo=open(args.fileFullPath, 'rb'))
