@@ -28,5 +28,5 @@ if __name__ == "__main__":
     msg = bot.send_message(chat_id=conf['telegram_bot_config']['channel_id'], text="Movimento Rilevato")
     if args.fileFullPath:
         meg = bot.send_photo(chat_id=conf['telegram_bot_config']['channel_id'], photo=open(args.fileFullPath, 'rb'))
-    if args.fileFullPath:
-        meg = bot.send_photo(chat_id=conf['telegram_bot_config']['channel_id'], video=open(args.videoFullPath, 'rb'))
+    if args.videoFullPath:
+        meg = bot.send_video(chat_id=conf['telegram_bot_config']['channel_id'], video=open(args.videoFullPath, 'rb'))
