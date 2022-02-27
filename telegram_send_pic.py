@@ -11,7 +11,9 @@ PHOTO_PATH = 'img/sample.png'
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process Input arguments.')
-    parser.add_argument('--file', dest='fileFullPath',  default=None,
+    parser.add_argument('--pic', dest='fileFullPath',  default=None,
+                        help='Full Image Path')
+    parser.add_argument('--video', dest='videoFullPath', default=None,
                         help='Full Image Path')
     parser.add_argument('--config', dest='configFile', default=JSON_FILE,
                         help='Full Config JASON Path')
@@ -24,4 +26,7 @@ if __name__ == "__main__":
     # Initialize Bot
     bot = telegram.Bot(token=conf['telegram_bot_config']['token_id'])
     msg = bot.send_message(chat_id=conf['telegram_bot_config']['channel_id'], text="Movimento Rilevato")
-    meg = bot.send_photo(chat_id=conf['telegram_bot_config']['channel_id'], photo=open(args.fileFullPath, 'rb'))
+    if args.fileFullPath:
+        meg = bot.send_photo(chat_id=conf['telegram_bot_config']['channel_id'], photo=open(args.fileFullPath, 'rb'))
+    if args.fileFullPath:
+        meg = bot.send_photo(chat_id=conf['telegram_bot_config']['channel_id'], video=open(args.videoFullPath, 'rb'))
