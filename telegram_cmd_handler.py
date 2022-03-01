@@ -49,7 +49,7 @@ def snapshot(update: Update, context: CallbackContext) -> None:
 def video(update: Update, context: CallbackContext) -> None:
     """Add a job to the queue."""
     update.message.reply_text('Sending Video to dedicated chat!')
-    webcontrol('action', 'makevideo')
+    webcontrol('action', 'makemovie')
 
 def pause(update: Update, context: CallbackContext) -> None:
     """Add a job to the queue."""
