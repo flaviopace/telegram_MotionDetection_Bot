@@ -17,6 +17,7 @@ import os
 import sys
 import json
 import logging
+import requests
 
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, CallbackContext
@@ -31,17 +32,24 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+def webcontrol(type, cmd):
+    req = 'http://192.168.2.100:8080/0/'+type+'/'+cmd
+    res = requests.get(req)
+    return res
+
 def hello(update: Update, context: CallbackContext) -> None:
     """Sends a message."""
     update.message.reply_text('Hi!')
 
 def snapshot(update: Update, context: CallbackContext) -> None:
     """Send the alarm message."""
-    update.message.reply_text('Send Picture to dedicated chat!')
+    update.message.reply_text('Sending Picture to dedicated chat!')
+    webcontrol('action', 'snapshot')
 
 def video(update: Update, context: CallbackContext) -> None:
     """Add a job to the queue."""
-    update.message.reply_text('Send Video to dedicated chat!')
+    update.message.reply_text('Sending Video to dedicated chat!')
+    webcontrol('action', 'makevideo')
 
 def pause(update: Update, context: CallbackContext) -> None:
     """Add a job to the queue."""
@@ -80,8 +88,6 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("help", hello))
     dispatcher.add_handler(CommandHandler("pic", snapshot))
     dispatcher.add_handler(CommandHandler("video", video))
-    dispatcher.add_handler(CommandHandler("pause", pause))
-    dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("status", status))
 
     # Start the Bot
