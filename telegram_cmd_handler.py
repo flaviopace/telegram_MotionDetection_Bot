@@ -18,6 +18,7 @@ import sys
 import json
 import logging
 import requests
+import re
 
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, CallbackContext
@@ -34,32 +35,54 @@ logger = logging.getLogger(__name__)
 
 def webcontrol(type, cmd):
     req = 'http://192.168.2.100:8080/0/'+type+'/'+cmd
-    res = requests.get(req)
-    return res
+    resp = requests.get(req)
+    if(re.search(r'b>(.*)', resp.text)):
+        return re.findall(r'b>(.*)', resp.text)[0]
+    elif (re.search(r'snap|make(.*)', resp.text)):
+        return 'command executed!'
+    else:
+        return 'Invalid Request'
 
-def hello(update: Update, context: CallbackContext) -> None:
+def help(update: Update, context: CallbackContext) -> None:
     """Sends a message."""
-    update.message.reply_text('Hi!')
+    update.message.reply_text('/pic or /video or /status or /stop or /start')
 
 def snapshot(update: Update, context: CallbackContext) -> None:
     """Send the alarm message."""
     update.message.reply_text('Sending Picture to dedicated chat!')
-    webcontrol('action', 'snapshot')
+    res = webcontrol('action', 'snapshot')
+    update.message.reply_text(res)
+    context.bot.send_message(chat_id=ch_id, text=res)
 
 def video(update: Update, context: CallbackContext) -> None:
     """Add a job to the queue."""
     update.message.reply_text('Sending Video to dedicated chat!')
-    webcontrol('action', 'makemovie')
+    res = webcontrol('action', 'makemovie')
+    update.message.reply_text(res)
+    context.bot.send_message(chat_id=ch_id, text=res)
 
 def pause(update: Update, context: CallbackContext) -> None:
     """Add a job to the queue."""
-    update.message.reply_text('Pause Video!')
+    update.message.reply_text('Pause Motion Detection!')
+    res = webcontrol('detection', 'pause')
+    update.message.reply_text(res)
+    context.bot.send_message(chat_id=ch_id, text=res)
 
 def start(update: Update, context: CallbackContext) -> None:
     """Add a job to the queue."""
-    context.bot.send_message('Start Video!')
+    update.message.reply_text('Start Motion Detection!')
+    res = webcontrol('detection', 'start')
+    update.message.reply_text(res)
+    context.bot.send_message(chat_id=ch_id, text=res)
 
 def status(update: Update, context: CallbackContext) -> None:
+    """Add a job to the queue."""
+    update.message.reply_text('Status Motion:')
+    res = webcontrol('detection', 'status')
+    update.message.reply_text(res)
+    context.bot.send_message(chat_id=ch_id, text=res)
+
+def status1(update: Update, context: CallbackContext) -> None:
     """Add a job to the queue."""
     job = context.job
     global ch_id
@@ -85,9 +108,15 @@ def main() -> None:
     dispatcher = updater.dispatcher
 
     # on different commands - answer in Telegram
-    dispatcher.add_handler(CommandHandler("help", hello))
+    dispatcher.add_handler(CommandHandler("help", help))
+    #pic
     dispatcher.add_handler(CommandHandler("pic", snapshot))
+    #video
     dispatcher.add_handler(CommandHandler("video", video))
+    #motion
+    dispatcher.add_handler(CommandHandler("stop", pause))
+    dispatcher.add_handler(CommandHandler("start", start))
+    #help
     dispatcher.add_handler(CommandHandler("status", status))
 
     # Start the Bot
