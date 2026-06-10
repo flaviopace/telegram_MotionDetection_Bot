@@ -33,6 +33,24 @@ def send_with_retry(send_fn):
     raise last_err
 
 
+def force_send_video(bot, chat, path):
+    """Get the clip through no matter what: try as an inline video, and if that
+    keeps failing fall back to sending it as a plain document (more lenient on
+    format/size, so it almost always delivers)."""
+    try:
+        with open(path, 'rb') as video:
+            return send_with_retry(lambda: bot.send_video(
+                chat_id=chat, video=video, caption=CAPTION,
+                timeout=UPLOAD_TIMEOUT))
+    except Exception as err:
+        print("send_video failed, falling back to document: {}".format(err),
+              file=sys.stderr)
+        with open(path, 'rb') as doc:
+            return send_with_retry(lambda: bot.send_document(
+                chat_id=chat, document=doc, caption=CAPTION,
+                timeout=UPLOAD_TIMEOUT))
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process Input arguments.')
     parser.add_argument('--pic', dest='fileFullPath', default=None,
@@ -54,10 +72,7 @@ if __name__ == "__main__":
     # Send the caption *with* the media so you never get an orphan text message
     # without its picture/video. Only send a standalone text when there's no file.
     if args.videoFullPath:
-        with open(args.videoFullPath, 'rb') as video:
-            send_with_retry(lambda: bot.send_video(
-                chat_id=chat, video=video, caption=CAPTION,
-                timeout=UPLOAD_TIMEOUT))
+        force_send_video(bot, chat, args.videoFullPath)
     elif args.fileFullPath:
         with open(args.fileFullPath, 'rb') as photo:
             send_with_retry(lambda: bot.send_photo(
